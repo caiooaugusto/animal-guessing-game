@@ -1,3 +1,9 @@
+/**
+ *  Author: Caio Augusto Peixer da Silva
+ *  Class description:
+ *
+ * */
+
 package com.game.node
 
 import com.game.animal.Animal
