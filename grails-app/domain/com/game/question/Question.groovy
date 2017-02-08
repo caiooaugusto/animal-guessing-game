@@ -1,15 +1,18 @@
 package com.game.question
 
-import com.game.node.Node
-
 class Question {
 
-    int questionId
     String text
 
-    static belongsTo = [nodeId:Node]
-
     static constraints = {
-        questionId unique: true
+        id unique: true
+        text blank: false
+    }
+
+    static mapping = {
+        table "question"
+        id column: "id"
+        text column: "text"
+        version false
     }
 }

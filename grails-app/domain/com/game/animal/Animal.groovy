@@ -1,15 +1,18 @@
 package com.game.animal
 
-import com.game.node.Node
-
 class Animal {
 
-    int animalId
     String name
 
-    static belongsTo = [nodeId:Node]
-
     static constraints = {
-         animalId unique: true
+        id unique: true
+        name blank: false
+    }
+
+    static mapping = {
+        table "animal"
+        id column: "id"
+        name column: "name"
+        version false
     }
 }

@@ -5,13 +5,27 @@ import com.game.question.Question
 
 class Node {
 
-    int nodeId
-    int parentId
-    NodeDirection growthTo
-    
-    static hasOne = [animalId:Animal, questionId:Question]
+    Node parent
+    Animal animal
+    Question question
+    enum Direction {
+        left, right
+    }
+    Direction growthTo
 
     static constraints = {
-        nodeId unique: true
+        id unique: true
+        parent blank: false, nullable: true
+        growthTo blank: false
+    }
+
+    static mapping = {
+        table "node"
+        id column: "id"
+        parent column: "parent_id"
+        animal column: "animal_id"
+        question column: "question_id"
+        growthTo column: "growth_to"
+        version false
     }
 }
