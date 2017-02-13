@@ -4,22 +4,22 @@
  *
  * */
 
-package com.game.question
+package com.game.node
 
-class Question {
+class Configuration {
 
     Integer id
-    String text
+    Integer currentNodeId
 
     static constraints = {
         id unique: true
-        text blank: false
+        currentNodeId blank: false, nullable: false
     }
 
     static mapping = {
-        table "question"
+        table "configuration"
         id column: "id"
-        text column: "text"
+        currentNodeId column: "current_node_id"
         version false
     }
 }

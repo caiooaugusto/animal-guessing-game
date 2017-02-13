@@ -8,6 +8,7 @@ package com.game.animal
 
 class Animal {
 
+    Integer id
     String name
 
     static constraints = {

@@ -11,18 +11,22 @@ import com.game.question.Question
 
 class Node {
 
+    Integer id
     Node parent
     Animal animal
     Question question
-    enum Direction {
-        left, right
-    }
-    Direction growthTo
+    /** By convention
+     *  growthTo(0) => left
+     *  growthTo(1) => right
+     */
+    Integer growthTo
 
     static constraints = {
         id unique: true
         parent blank: false, nullable: true
-        growthTo blank: false
+        animal blank: false, nullable: true
+        question blank: false, nullable: true
+        growthTo blank: false, nullable: true
     }
 
     static mapping = {

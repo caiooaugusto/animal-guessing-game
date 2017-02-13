@@ -1,104 +1,139 @@
 package com.game.node
 
+import com.game.animal.Animal
+import com.game.question.Question
 
-
-import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
-
-@Transactional(readOnly = true)
 class NodeController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-
-    def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        respond Node.list(params), model:[nodeInstanceCount: Node.count()]
+    Node getRoot() {
+        def node = Node.findByParentIsNull()
+        return node
     }
 
-    def show(Node nodeInstance) {
-        respond nodeInstance
+    Integer getCurrentNodeId(){
+        return Configuration.first().currentNodeId
     }
 
-    def create() {
-        respond new Node(params)
-    }
-
-    @Transactional
-    def save(Node nodeInstance) {
-        if (nodeInstance == null) {
-            notFound()
-            return
-        }
-
-        if (nodeInstance.hasErrors()) {
-            respond nodeInstance.errors, view:'create'
-            return
-        }
-
-        nodeInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'node.label', default: 'Node'), nodeInstance.id])
-                redirect nodeInstance
+    def setCurrentNodeId(node){
+        def count = Configuration.countByIdIsNotNull()
+        if (count) {
+            //Configuration.executeUpdate("update Configuration set current_node_id = ? where id = ?", [node.id, 1])
+            //Configuration.executeUpdate("update Configuration set current_node_id = $node.id where id = 1")
+            Configuration.executeUpdate("delete Configuration c")
+            //Configuration.executeUpdate("update Configuration c set c.currentNodeId=:newCurrentNode where c.id=1", [newCurrentNode: node.id])
+            def currentNode = new Configuration(currentNodeId: node.id)
+            if (!currentNode.save(flush: true)) {
+                currentNode.errors.each {
+                    println it
+                }
             }
-            '*' { respond nodeInstance, [status: CREATED] }
+        }else{
+            def currentNode = new Configuration(currentNodeId: 1)
+            if (!currentNode.save(flush: true)) {
+                currentNode.errors.each {
+                    println it
+                }
+            }
         }
     }
 
-    def edit(Node nodeInstance) {
-        respond nodeInstance
+    def getFirstQuestion() {
+        //get root node associated with first question
+        def rootNode = getRoot()
+        //set current node in data base
+        setCurrentNodeId(rootNode)
+        //get the question with root node id
+        def firstQuestion = Question.get(rootNode.id)
+        //render question text to template
+        render(template: "message", bean: firstQuestion)
     }
 
-    @Transactional
-    def update(Node nodeInstance) {
-        if (nodeInstance == null) {
-            notFound()
+    def showLeafNodeMessage(boolean userButtonChoice) {
+        if (userButtonChoice) {
+            //force fail, with no return or render, so remoteLink could call onFailure js function that show createAnimal dialog
+        }else {
+            render("Haha I win!")
+        }
+    }
+
+    def showNodeMessage(node, boolean leaf, boolean userButtonChoice) {
+        def animal = Animal.get(node.animal.id)
+        def question = Question.get(node.question.id)
+
+        if(leaf) {
+            showLeafNodeMessage(userButtonChoice)
             return
         }
 
-        if (nodeInstance.hasErrors()) {
-            respond nodeInstance.errors, view:'edit'
-            return
-        }
-
-        nodeInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Node.label', default: 'Node'), nodeInstance.id])
-                redirect nodeInstance
-            }
-            '*'{ respond nodeInstance, [status: OK] }
+        if(animal?.id) {
+            render("The animal that you thought is the $animal.name?")
+        }else {
+            render("The animal $question.text ?")
         }
     }
 
-    @Transactional
-    def delete(Node nodeInstance) {
-
-        if (nodeInstance == null) {
-            notFound()
-            return
-        }
-
-        nodeInstance.delete flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Node.label', default: 'Node'), nodeInstance.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
+    def getLeftNode() {
+        def currentNodeId = getCurrentNodeId()
+        def leftNode = Node.executeQuery("from Node where parent_id = ? and growth_to = ?", [currentNodeId, 0])
+        if(!leftNode.empty) {
+            setCurrentNodeId(leftNode)
+            showNodeMessage(leftNode, false, false)
+        }else{
+            showNodeMessage(leftNode, true, false)
         }
     }
 
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'node.label', default: 'Node'), params.id])
-                redirect action: "index", method: "GET"
-            }
-            '*'{ render status: NOT_FOUND }
+    def getRightNode() {
+        def currentNodeId = getCurrentNodeId()
+        def rightNode = Node.executeQuery("from Node where parent_id = ? and growth_to = ?", [currentNodeId, 1])
+        //if its not empty set the current node and show node message
+        if(!rightNode.empty) {
+            setCurrentNodeId(rightNode)
+            showNodeMessage(rightNode, false, true)
+        }else{ //else it is a leaf node and we need to know if we win or ask for a question
+            showNodeMessage(rightNode, true, true)
         }
+    }
+
+    def initGame() {
+        if (!Node.exists(3)) {
+            def question = new Question(text: "lives in water?")
+            if (!question.save(flush: true)) {
+                question.errors.each {
+                    println it
+                }
+            }
+            def shark = new Animal(name: "Shark")
+            if (!shark.save(flush: true)) {
+                shark.errors.each {
+                    println it
+                }
+            }
+            def monkey = new Animal(name: "Monkey")
+            if (!monkey.save(flush: true)) {
+                monkey.errors.each {
+                    println it
+                }
+            }
+            def root = new Node(parent: null, animal: null, question: 1, growthTo: null)
+            if (!root.save(flush: true)) {
+                root.errors.each {
+                    println it
+                }
+            }
+            def nodeLeft = new Node(parent: 1, animal: 1, question: null, growthTo: 0)
+            if (!nodeLeft.save(flush: true)) {
+                nodeLeft.errors.each {
+                    println it
+                }
+            }
+            def nodeRight = new Node(parent: 1, animal: 2, question: null, growthTo: 1)
+            if (!nodeRight.save(flush: true)) {
+                nodeRight.errors.each {
+                    println it
+                }
+            }
+        }
+        Configuration.executeUpdate("delete Configuration c")
     }
 }
