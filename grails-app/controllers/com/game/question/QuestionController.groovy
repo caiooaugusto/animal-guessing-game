@@ -4,7 +4,7 @@ import com.game.node.Configuration
 import com.game.node.Node
 
 class QuestionController {
-
+    //create question and related node 
     def createQuestion(){
         def question = new Question(text: params.text)
         if (!question.save(flush: true)) {
@@ -19,6 +19,7 @@ class QuestionController {
                 println it
             }
         }
+        //call node controller function to reorder nodes
         redirect(controller: "node", action: "syncCreatedNodes")
     }
 

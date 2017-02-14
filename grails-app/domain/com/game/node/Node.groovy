@@ -1,14 +1,8 @@
-/**
- *  Author: Caio Augusto Peixer da Silva
- *  Class description:
- *
- * */
-
 package com.game.node
 
 import com.game.animal.Animal
 import com.game.question.Question
-
+//this class is used for out binary tree abstraction in DB and could contain a question or an animal associated
 class Node {
 
     Integer id
@@ -18,15 +12,16 @@ class Node {
     /** By convention
      *  growthTo(0) => left
      *  growthTo(1) => right
+     *  We need this variable to know from what direction de binary tree is growing
      */
     Integer growthTo
 
     static constraints = {
         id unique: true
-        parent blank: false, nullable: true
-        animal blank: false, nullable: true
-        question blank: false, nullable: true
-        growthTo blank: false, nullable: true
+        parent blank: true, nullable: true
+        animal blank: true, nullable: true
+        question blank: true, nullable: true
+        growthTo blank: true, nullable: true
     }
 
     static mapping = {

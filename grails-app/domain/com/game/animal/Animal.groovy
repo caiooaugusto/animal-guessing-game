@@ -1,13 +1,7 @@
-/**
- *  Author: Caio Augusto Peixer da Silva
- *  Class description:
- *
- * */
-
 package com.game.animal
 
 import com.game.node.Node
-
+//this class is used when node is an animal and need a name
 class Animal {
 
     Integer id

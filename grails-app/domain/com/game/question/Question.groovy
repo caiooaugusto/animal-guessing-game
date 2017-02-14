@@ -1,13 +1,7 @@
-/**
- *  Author: Caio Augusto Peixer da Silva
- *  Class description:
- *
- * */
-
 package com.game.question
 
 import com.game.node.Node
-
+//this class is used when node is a question and need a text
 class Question {
 
     Integer id

@@ -6,22 +6,19 @@ import com.game.question.Question
 class NodeController {
     //delete all rows in DB to reset game data
     def resetGame() {
+        Node.executeUpdate("delete Node n")
         Configuration.executeUpdate("delete Configuration c")
         Animal.executeUpdate("delete Animal a")
-        Question.executeUpdate("delete Question q")
-        Node.executeUpdate("delete Node n")
+        Question.executeUpdate("delete Question q")        
     }
     //that function reorder nodes in our binary tree abstraction in DB
     def syncCreatedNodes(){
-        Integer currentNodeId = getCurrentNodeId()
-        def currentGrowthTo = Configuration.first().growthTo
+        Integer currentNodeId = getCurrentNodeId()        
         def lastVisitedNode = Node.get(currentNodeId)
-
         //get the last two records created
         def lastInsertedNodes = Node.list(max: 2, sort: "id", order: "desc")
         def lastInsertedAnimal = lastInsertedNodes[1]
         def lastInsertedQuestion =  lastInsertedNodes[0]
-
         //Update last inserted question parent and growth direction with last visited node data
         Node.executeUpdate("update Node n set n.parent=$lastVisitedNode.parent, n.growthTo=$lastVisitedNode.growthTo where id=$lastInsertedQuestion.id")
         //Update last visited node parent with last inserted question id
@@ -79,58 +76,49 @@ class NodeController {
             render("Haha I win!")
         }
     }
-
+    //when showing message (animal name or question text) check if the node is a leaf to ask user a animal and a sentence or end game
     def showNodeMessage(node, boolean leaf, boolean userButtonChoice) {
         def animal = Animal.get(node.animal.id)
         def question = Question.get(node.question.id)
-
+        //check if its a leaf node
         if(leaf) {
             showLeafNodeMessage(userButtonChoice)
             return
         }
-
+        //if its not a leaf node show right message
         if(animal?.id) {
             render("The animal that you thought is the $animal.name?")
         }else {
             render("The animal $question.text ?")
         }
     }
-
-    def getLeftNode() {
-        Configuration.executeUpdate("update Configuration set growthTo=0")
+    //when user choice the button "yes" we call need get left node
+    def getLeftNode() {        
         def currentNodeId = getCurrentNodeId()
 
         def leftNode = Node.executeQuery("from Node where parent_id = ? and growth_to = ?", [currentNodeId, 0])
-        log.error("leftNode")
-        log.error(leftNode)
+       
         if(!leftNode.empty) {
             setCurrentNodeId(leftNode)
-            log.error("currentNodeId")
-            log.error(getCurrentNodeId())
             showNodeMessage(leftNode, false, false)
         }else{
             showNodeMessage(leftNode, true, false)
         }
     }
-
-    def getRightNode() {
-        Configuration.executeUpdate("update Configuration set growthTo=1")
+    //when user choice the button "no" we call need get right node
+    def getRightNode() {        
         def currentNodeId = getCurrentNodeId()
 
         def rightNode = Node.executeQuery("from Node where parent_id = ? and growth_to = ?", [currentNodeId, 1])
         //if its not empty set the current node and show node message
-        log.error("rightNode")
-        log.error(rightNode)
         if(!rightNode.empty) {
             setCurrentNodeId(rightNode)
-            log.error("currentNodeId")
-            log.error(getCurrentNodeId())
             showNodeMessage(rightNode, false, true)
         }else{ //else it is a leaf node and we need to know if we win or ask for a question
             showNodeMessage(rightNode, true, true)
         }
     }
-
+    //start game initial data, 1 question and 2 animals
     def initGame() {
         if (!Question.countByIdIsNotNull()) {
             def question = new Question(text: "lives in water")

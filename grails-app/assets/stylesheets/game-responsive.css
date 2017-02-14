@@ -1,16 +1,14 @@
+/*config behavior of main card considering device width and height*/
 @media(max-width: 360px){
     .mdl-card {
         width: 310px;
     }
 }
-
 @media(max-height: 500px) {
     .main-card-wide.mdl-card{
         height: 400px;
     }
 }
-
-
 @media(max-height: 370px) {
     .main-card-wide.mdl-card{
         height: 310px;

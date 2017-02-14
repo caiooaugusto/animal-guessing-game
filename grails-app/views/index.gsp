@@ -48,10 +48,9 @@
 			</div>
 			<div class="mdl-dialog__actions">
 				<g:javascript>
-				var createQuestion = function(){
-    				//, onComplete:"reloadGame()"
+				var createQuestion = function(){    				
 					var questionText = getQuestionText();
-					${remoteFunction(action:"createQuestion", controller: "question", params: '\'text=\' + questionText')}
+					${remoteFunction(action:"createQuestion", controller: "question", params: '\'text=\' + questionText', onComplete:"reloadGame()")}
 				};
 				</g:javascript>
 				<a id="button-create-question" class="mdl-button close" href="javascript:void(0)" onclick="createQuestion();return false;">Ok</a>
