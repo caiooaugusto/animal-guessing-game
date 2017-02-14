@@ -6,6 +6,7 @@ import com.game.question.Question
 class NodeController {
     //delete all rows in DB to reset game data
     def resetGame() {
+        //that function should be improved, not working well in all cases
         Node.executeUpdate("delete Node n")
         Configuration.executeUpdate("delete Configuration c")
         Animal.executeUpdate("delete Animal a")
