@@ -21,5 +21,8 @@ function getQuestionText() {
 }
 
 function reloadGame() {
-    location.reload(true);
+    setTimeout(function () {
+        location.reload(true);
+    },3000);
+
 }

@@ -1,5 +1,6 @@
 package com.game.question
 
+import com.game.node.Configuration
 import com.game.node.Node
 
 class QuestionController {
@@ -12,7 +13,7 @@ class QuestionController {
             }
         }
 
-        def questionNode = new Node(parent: null, animal: null, question: question, growthTo: 1)
+        def questionNode = new Node(parent: null, animal: null, question: question)
         if (!questionNode.save(flush: true)) {
             questionNode.errors.each {
                 println it

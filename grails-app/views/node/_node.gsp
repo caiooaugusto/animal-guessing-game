@@ -1,12 +1,9 @@
-<g:include controller="node" action="initGame"/>
-
 <!-- Wide card with share menu button -->
 <div class="main-card-wide mdl-card mdl-shadow--16dp">
     <div class="mdl-card__menu">
         <g:javascript>
             var resetGame = function(){
-                    //, onComplete:"reloadGame()"
-					${remoteFunction(action:"resetGame", controller: "node")}
+                ${remoteFunction(action:"resetGame", controller: "node", onComplete:"reloadGame()")}
             };
         </g:javascript>
         <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" href="javascript:void(0)" onclick="resetGame();return false;">

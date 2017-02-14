@@ -6,6 +6,8 @@
 	</head>
 
 	<body>
+		<g:include controller="node" action="initGame"/>
+
 		<g:render template="node/node"></g:render>
 
 		<!-- modal input dialog-->
@@ -47,8 +49,9 @@
 			<div class="mdl-dialog__actions">
 				<g:javascript>
 				var createQuestion = function(){
+    				//, onComplete:"reloadGame()"
 					var questionText = getQuestionText();
-					${remoteFunction(action:"createQuestion", controller: "question", params: '\'text=\' + questionText', onComplete:"reloadGame()")}
+					${remoteFunction(action:"createQuestion", controller: "question", params: '\'text=\' + questionText')}
 				};
 				</g:javascript>
 				<a id="button-create-question" class="mdl-button close" href="javascript:void(0)" onclick="createQuestion();return false;">Ok</a>
