@@ -6,6 +6,8 @@
 
 package com.game.animal
 
+import com.game.node.Node
+
 class Animal {
 
     Integer id

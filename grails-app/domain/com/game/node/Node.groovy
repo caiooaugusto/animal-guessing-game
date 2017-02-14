@@ -33,8 +33,11 @@ class Node {
         table "node"
         id column: "id"
         parent column: "parent_id"
+        parent cascade: 'all-delete-orphan'
         animal column: "animal_id"
+        animal cascade: 'all-delete-orphan'
         question column: "question_id"
+        question cascade: 'all-delete-orphan'
         growthTo column: "growth_to"
         version false
     }

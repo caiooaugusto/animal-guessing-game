@@ -19,6 +19,14 @@ class AnimalController {
             }
         }
         def lastVisitedAnimalName = getLastVisitedAnimalName()
+
+        def animalNode = new Node(parent: null, animal: animal, question: null, growthTo: 0)
+        if (!animalNode.save(flush: true)) {
+            animalNode.errors.each {
+                println it
+            }
+        }
+
         render("The $params.name ____, but the $lastVisitedAnimalName not!")
     }
 }

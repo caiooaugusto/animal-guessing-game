@@ -6,6 +6,8 @@
 
 package com.game.question
 
+import com.game.node.Node
+
 class Question {
 
     Integer id

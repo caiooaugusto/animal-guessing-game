@@ -5,7 +5,37 @@ import com.game.question.Question
 
 class NodeController {
 
-    Node getRoot() {
+    def resetGame(){
+
+        Configuration.executeUpdate("delete Configuration")
+        Node.executeUpdate("delete Node")
+        Animal.executeUpdate("delete Animal")
+        Question.executeUpdate("delete Question")
+// Agency.where { }.deleteAll()
+
+    }
+
+    def syncCreatedNodes(){
+        def currentNodeId = Configuration.first().currentNodeId
+        def lastVisitedNode = Node.get(currentNodeId)
+
+        def lastInsertedNodes = Node.list(max: 2, sort: "id", order: "desc")
+        def lastInsertedAnimal = lastInsertedNodes[1]
+        def lastInsertedQuestion =  lastInsertedNodes[0]
+
+        //Update last inserted question parent with last visited node parent
+        Node.executeUpdate("update Node n set n.parent=$lastVisitedNode.parent.id where id=$lastInsertedQuestion.id")
+
+        //Update last visited node parent with last inserted question id
+        Node.executeUpdate("update Node n set n.parent=$lastInsertedQuestion.id where id=$lastVisitedNode.id")
+
+        //Update last inserted animal parent with last inserted question id
+        Node.executeUpdate("update Node n set n.parent=$lastInsertedQuestion.id where id=$lastInsertedAnimal.id")
+
+        return true
+    }
+
+    Node getRoot(){
         def node = Node.findByParentIsNull()
         return node
     }
@@ -96,7 +126,7 @@ class NodeController {
     }
 
     def initGame() {
-        if (!Node.exists(3)) {
+        if (!Node.exists(1)) {
             def question = new Question(text: "lives in water?")
             if (!question.save(flush: true)) {
                 question.errors.each {

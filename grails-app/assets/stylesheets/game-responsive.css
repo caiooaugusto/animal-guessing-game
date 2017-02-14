@@ -3,3 +3,17 @@
         width: 310px;
     }
 }
+
+@media(max-height: 500px) {
+    .main-card-wide.mdl-card{
+        height: 400px;
+    }
+}
+
+
+@media(max-height: 370px) {
+    .main-card-wide.mdl-card{
+        height: 310px;
+    }
+}
+

@@ -17,7 +17,7 @@ function getAnimalName() {
 }
 
 function getQuestionText() {
-    return document.getElementById("quetion-text").value;
+    return document.getElementById("question-text").value;
 }
 
 function reloadGame() {
